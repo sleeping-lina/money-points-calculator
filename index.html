@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ポイ活・マネ活 計算ツール v1</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>body{margin:0;background:#F3EFE6;}</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+const Plus=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><line x1="12"y1="5"x2="12"y2="19"/><line x1="5"y1="12"x2="19"y2="12"/></svg>;
+const X=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+const RotateCcw=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+const Clock=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><circle cx="12"cy="12"r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+const Copy=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><rect width="14"height="14"x="8"y="8"rx="2"ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
+const Check=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M20 6 9 17l-5-5"/></svg>;
+const Trash2=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10"x2="10"y1="11"y2="17"/><line x1="14"x2="14"y1="11"y2="17"/></svg>;
+const ChevronDown=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="m6 9 6 6 6-6"/></svg>;
+const ChevronUp=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="m18 15-6-6-6 6"/></svg>;
+const CalcIcon=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><rect width="16"height="20"x="4"y="2"rx="2"/><line x1="8"x2="16"y1="6"y2="6"/><line x1="16"x2="16"y1="14"y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>;
+const Percent=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><line x1="19"x2="5"y1="5"y2="19"/><circle cx="6.5"cy="6.5"r="2.5"/><circle cx="17.5"cy="17.5"r="2.5"/></svg>;
+const Coins=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><circle cx="8"cy="8"r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><line x1="16.71"x2="18.29"y1="12.59"y2="13.41"/></svg>;
+
+
+/* ============================ helpers ============================ */
+
+// safe expression evaluator: + - × ÷ ( ) % , (no eval)
+function evaluate(input) {
+  if (!input || !input.trim()) return null;
+  const s = input
+    .replace(/×/g, "*")
+    .replace(/÷/g, "/")
+    .replace(/−/g, "-")
+    .replace(/,/g, "");
+  let i = 0;
+  const skip = () => { while (s[i] === " ") i++; };
+
+  function parseNumber() {
+    skip();
+    const start = i;
+    while (i < s.length && /[0-9.]/.test(s[i])) i++;
+    if (start === i) throw new Error("num");
+    const v = parseFloat(s.slice(start, i));
+    if (Number.isNaN(v)) throw new Error("nan");
+    return v;
+  }
+  // returns {value, percentRaw}
+  function parseFactor() {
+    skip();
+    let node;
+    if (s[i] === "(") {
+      i++;
+      const v = parseExpr();
+      skip();
+      if (s[i] === ")") i++; else throw new Error("paren");
+      node = { value: v, percentRaw: null };
+    } else if (s[i] === "-") {
+      i++;
+      const f = parseFactor();
+      node = { value: -f.value, percentRaw: f.percentRaw === null ? null : -f.percentRaw };
+    } else if (s[i] === "+") {
+      i++;
+      node = parseFactor();
+    } else {
+      node = { value: parseNumber(), percentRaw: null };
+    }
+    skip();
+    if (s[i] === "%") {
+      i++;
+      node = { value: node.value / 100, percentRaw: node.value };
+    }
+    return node;
+  }
+  function parseTerm() {
+    const left = parseFactor();
+    let value = left.value;
+    let solo = left.percentRaw;
+    skip();
+    while (s[i] === "*" || s[i] === "/") {
+      const op = s[i]; i++;
+      const right = parseFactor();
+      solo = null;
+      value = op === "*" ? value * right.value : value / right.value;
+      skip();
+    }
+    return { value, soloPercent: solo };
+  }
+  function parseExpr() {
+    let t = parseTerm();
+    let value = t.value;
+    skip();
+    while (s[i] === "+" || s[i] === "-") {
+      const op = s[i]; i++;
+      const rt = parseTerm();
+      if (rt.soloPercent !== null && rt.soloPercent !== undefined) {
+        const delta = value * rt.soloPercent / 100;
+        value = op === "+" ? value + delta : value - delta;
+      } else {
+        value = op === "+" ? value + rt.value : value - rt.value;
+      }
+      skip();
+    }
+    return value;
+  }
+
+  try {
+    const result = parseExpr();
+    skip();
+    if (i < s.length) return null;
+    if (!Number.isFinite(result)) return null;
+    return result;
+  } catch (e) {
+    return null;
+  }
+}
+
+function fmt(n) {
+  if (n === null || n === undefined || Number.isNaN(n) || !Number.isFinite(n)) return "—";
+  const rounded = Math.round(n * 1e8) / 1e8;
+  const sign = rounded < 0 ? "-" : "";
+  const abs = Math.abs(rounded);
+  const [intp, decp] = String(abs).split(".");
+  const withComma = intp.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return sign + withComma + (decp ? "." + decp : "");
+}
+
+const num = (v) => {
+  if (v === "" || v === null || v === undefined) return null;
+  const x = parseFloat(String(v).replace(/,/g, ""));
+  return Number.isFinite(x) ? x : null;
+};
+
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+function moveNext(el) {
+  const list = Array.from(document.querySelectorAll(".fieldnav"));
+  const idx = list.indexOf(el);
+  if (idx >= 0 && idx < list.length - 1) list[idx + 1].focus();
+  else el.blur();
+}
+
+async function copyText(t) {
+  try {
+    await navigator.clipboard.writeText(t);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/* ============================ styles ============================ */
+const STYLE = `
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+.app{
+  --paper:#F3EFE6; --paper2:#ECE6D8; --ink:#22302A; --soft:#74827A;
+  --accent:#14946B; --accent2:#0B7350; --mint:#E2F1EA; --mint2:#D3E9DE;
+  --gold:#D99A2B; --coral:#D9573F; --line:#E2DACA; --card:#FFFDF7;
+  font-family:'Zen Kaku Gothic New',-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;
+  color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(120% 80% at 100% 0%, #F7F3EA 0%, var(--paper) 42%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.014) 0 1px, transparent 1px 26px);
+}
+.app *{ box-sizing:border-box; }
+.mono{ font-family:'Roboto Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+.maru{ font-family:'Zen Maru Gothic',sans-serif; }
+
+.wrap{ max-width:480px; margin:0 auto; padding:0 14px 120px; }
+
+.topbar{ position:sticky; top:0; z-index:30; padding:14px 14px 10px;
+  background:linear-gradient(180deg,var(--paper) 72%, rgba(243,239,230,0)); }
+.brand{ display:flex; align-items:center; gap:9px; margin-bottom:12px; }
+.brand .dot{ width:30px;height:30px;border-radius:9px;background:linear-gradient(150deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 10px rgba(11,115,80,.28);}
+.brand h1{ font-size:16px; font-weight:700; letter-spacing:.02em; margin:0; }
+.brand span{ font-size:11px; color:var(--soft); margin-left:2px; }
+
+.tabs{ display:flex; gap:6px; background:var(--paper2); padding:5px; border-radius:15px;
+  border:1px solid var(--line); box-shadow: inset 0 1px 2px rgba(0,0,0,.04); }
+.tab{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:10px 4px; border:0; border-radius:11px; background:transparent; cursor:pointer;
+  font-family:inherit; font-size:13px; font-weight:700; color:var(--soft); transition:.18s; }
+.tab.active{ background:var(--card); color:var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.08); }
+.tab svg{ width:16px;height:16px; }
+
+.card{ background:var(--card); border:1px solid var(--line); border-radius:20px;
+  padding:16px; margin-bottom:14px; box-shadow:0 6px 18px rgba(34,48,42,.05); }
+
+/* ---------- calculator ---------- */
+.disp{ background:linear-gradient(170deg,#1d2a24,#16201b); border-radius:18px; padding:14px 16px 12px;
+  color:#eef3ef; box-shadow: inset 0 2px 8px rgba(0,0,0,.35); }
+.disp .topline{ display:flex; justify-content:space-between; align-items:center; min-height:18px; margin-bottom:6px;}
+.disp .mem{ font-size:11px; font-weight:700; color:var(--gold); letter-spacing:.04em; display:flex; gap:6px; align-items:center;}
+.disp .mem.off{ visibility:hidden; }
+.disp .taxsel{ display:flex; gap:4px; align-items:center; }
+.disp .taxbtn{ font-size:10.5px; padding:3px 7px; border-radius:7px; border:1px solid rgba(255,255,255,.18);
+  background:transparent; color:#cdd8d2; cursor:pointer; font-family:inherit; }
+.disp .taxbtn.on{ background:var(--gold); color:#241a05; border-color:var(--gold); font-weight:700; }
+.exprInput{ width:100%; background:transparent; border:0; outline:none; color:#fff; text-align:right;
+  font-size:22px; font-weight:500; letter-spacing:.01em; padding:2px 0; }
+.exprInput::placeholder{ color:#5f6f67; }
+.disp .res{ text-align:right; font-size:30px; font-weight:700; color:#8ee6bd; margin-top:2px; min-height:36px;}
+.disp .resrow{ display:flex; justify-content:flex-end; align-items:center; gap:10px; }
+.miniCopy{ background:rgba(255,255,255,.1); border:0; color:#cfe9dd; border-radius:8px; padding:6px; cursor:pointer; }
+
+.pad{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+.key{ border:0; border-radius:14px; padding:0; height:56px; font-family:'Roboto Mono',monospace;
+  font-size:20px; font-weight:500; cursor:pointer; background:var(--paper2); color:var(--ink);
+  box-shadow:0 2px 0 rgba(0,0,0,.07); transition:transform .05s, filter .1s; }
+.key:active{ transform:translateY(1px); filter:brightness(.96); }
+.key.op{ background:var(--mint); color:var(--accent2); font-weight:700; }
+.key.fn{ background:#EDE7D8; color:var(--soft); font-size:14px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif;}
+.key.tax{ background:#F6ECD6; color:#9a6b12; font-size:14px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif;}
+.key.eq{ background:linear-gradient(150deg,var(--accent),var(--accent2)); color:#fff; grid-column:span 2; font-weight:700;
+  box-shadow:0 3px 0 rgba(11,115,80,.4);}
+.key.back{ background:#F3DED9; color:var(--coral); }
+.key.clear{ background:#F3DED9; color:var(--coral); font-size:15px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif;}
+
+/* ---------- shared row controls ---------- */
+.sectionTitle{ display:flex; align-items:center; gap:8px; margin:18px 2px 8px; }
+.sectionTitle .bar{ width:4px;height:16px;border-radius:3px;background:var(--accent); }
+.sectionTitle h2{ font-size:13px; font-weight:700; color:var(--soft); margin:0; letter-spacing:.03em; }
+
+.cardHead{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:8px; }
+.cardHead .badge{ display:flex; align-items:center; gap:8px; }
+.cardHead .nbox{ width:24px;height:24px;border-radius:8px;background:var(--mint);color:var(--accent2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700; font-family:'Roboto Mono',monospace;}
+.cardHead .ttl{ font-size:13.5px; font-weight:700; }
+.iconbtn{ display:flex; align-items:center; justify-content:center; gap:4px; border:1px solid var(--line);
+  background:var(--card); border-radius:9px; padding:6px 8px; cursor:pointer; color:var(--soft);
+  font-family:inherit; font-size:11px; font-weight:700; }
+.iconbtn svg{ width:14px;height:14px; }
+.iconbtn:active{ background:var(--paper2); }
+.iconbtn.danger{ color:var(--coral); }
+
+.row{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:11px 12px; margin-bottom:9px; }
+.sentence{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 6px; font-size:14px; line-height:1.9; }
+.field{ width:84px; max-width:30vw; background:var(--card); border:1.5px solid var(--line); border-radius:9px;
+  padding:7px 8px; font-family:'Roboto Mono',monospace; font-size:15px; text-align:right; outline:none; color:var(--ink);
+  transition:border-color .15s, box-shadow .15s; }
+.field:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--mint); }
+.field::placeholder{ color:#b9b29f; font-family:'Zen Kaku Gothic New',sans-serif; font-size:12px; }
+.ans{ display:inline-flex; align-items:baseline; gap:2px; background:var(--mint); border-radius:8px; padding:3px 9px;
+  font-family:'Roboto Mono',monospace; font-weight:700; color:var(--accent2); font-size:16px; }
+.ans.empty{ background:var(--paper2); color:#b9b29f; }
+.qt{ color:var(--soft); font-weight:700; }
+.formula{ margin-top:7px; font-family:'Roboto Mono',monospace; font-size:11px; color:var(--soft); word-break:break-all; }
+.rowfoot{ display:flex; gap:7px; margin-top:9px; align-items:center; }
+.rowfoot .spacer{ flex:1; }
+.rowx{ position:absolute; }
+.rowwrap{ position:relative; }
+.delrow{ background:#F3DED9; color:var(--coral); border:0; border-radius:8px; width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center; cursor:pointer; }
+
+.cardFoot{ display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+.histbox{ margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; }
+.histitem{ display:flex; align-items:center; gap:8px; padding:6px 2px; font-size:12.5px; }
+.histitem .txt{ flex:1; font-family:'Roboto Mono',monospace; color:var(--ink); }
+.histitem .delx{ color:var(--soft); cursor:pointer; background:none;border:0; padding:4px; }
+.histempty{ font-size:12px; color:var(--soft); padding:4px 2px; }
+
+.outgrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:11px; }
+.outbox{ background:var(--mint); border-radius:11px; padding:9px 11px; }
+.outbox .lab{ font-size:11px; color:var(--accent2); font-weight:700; margin-bottom:2px; }
+.outbox .val{ font-family:'Roboto Mono',monospace; font-size:17px; font-weight:700; color:var(--ink); }
+.outbox.alt{ background:#FBF1DC; } .outbox.alt .lab{ color:#9a6b12; }
+
+.ratechip{ display:flex; align-items:center; gap:5px; }
+.ratechip .field{ width:70px; }
+
+.bigreset{ width:100%; margin-top:6px; border:1.5px dashed var(--coral); color:var(--coral); background:transparent;
+  border-radius:14px; padding:13px; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer; }
+.bigreset:active{ background:#FBEDE9; }
+
+.toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); background:var(--ink); color:#fff;
+  padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700; z-index:80; display:flex;align-items:center;gap:7px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25); animation:pop .2s ease; }
+@keyframes pop{ from{opacity:0;} }
+.hint{ font-size:11px; color:var(--soft); text-align:center; margin:2px 0 14px; line-height:1.7; }
+`;
+
+/* ============================ percent config ============================ */
+const PCT_CARDS = [
+  {
+    n: 1, key: "p1", pa: "金額", pb: "％",
+    tokens: ["a", "の", "b", "% は", "ans"],
+    suffix: "",
+    calc: (a, b) => (a == null || b == null ? null : a * b / 100),
+    formula: (a, b, r) => `${fmt(a)} × ${fmt(b)}% = ${fmt(r)}`,
+    text: (a, b, r) => `${fmt(a)} の ${fmt(b)}% は ${fmt(r)}`,
+  },
+  {
+    n: 2, key: "p2", pa: "部分", pb: "全体",
+    tokens: ["a", "は", "b", "の", "ans", "%"],
+    suffix: "%",
+    calc: (a, b) => (a == null || b == null || b === 0 ? null : a / b * 100),
+    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b)} × 100 = ${fmt(r)}%`,
+    text: (a, b, r) => `${fmt(a)} は ${fmt(b)} の ${fmt(r)}%`,
+  },
+  {
+    n: 3, key: "p3", pa: "部分", pb: "％",
+    tokens: ["a", "が", "b", "% の場合、全体は", "ans"],
+    suffix: "",
+    calc: (a, b) => (a == null || b == null || b === 0 ? null : a / (b / 100)),
+    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b)}% = ${fmt(r)}`,
+    text: (a, b, r) => `${fmt(a)} が ${fmt(b)}% → 全体 ${fmt(r)}`,
+  },
+  {
+    n: 4, key: "p4", pa: "変更前", pb: "変更後",
+    tokens: ["a", "から", "b", "への増減率は", "ans", "%"],
+    suffix: "%",
+    calc: (a, b) => (a == null || b == null || a === 0 ? null : (b - a) / a * 100),
+    formula: (a, b, r) => `(${fmt(b)} − ${fmt(a)}) ÷ ${fmt(a)} × 100 = ${fmt(r)}%`,
+    text: (a, b, r) => `${fmt(a)} → ${fmt(b)} の増減率 ${fmt(r)}%`,
+  },
+  {
+    n: 5, key: "p5", pa: "金額", pb: "％",
+    tokens: ["a", "の", "b", "%増し は", "ans"],
+    suffix: "",
+    calc: (a, b) => (a == null || b == null ? null : a * (1 + b / 100)),
+    formula: (a, b, r) => `${fmt(a)} + ${fmt(a)}×${fmt(b)}% = ${fmt(r)}`,
+    text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%増し = ${fmt(r)}`,
+  },
+  {
+    n: 6, key: "p6", pa: "金額", pb: "％",
+    tokens: ["a", "の", "b", "%引き は", "ans"],
+    suffix: "",
+    calc: (a, b) => (a == null || b == null ? null : a * (1 - b / 100)),
+    formula: (a, b, r) => `${fmt(a)} − ${fmt(a)}×${fmt(b)}% = ${fmt(r)}`,
+    text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%引き = ${fmt(r)}`,
+  },
+];
+
+/* ============================ App ============================ */
+function App() {
+  const [tab, setTab] = useState("calc");
+  const [toast, setToast] = useState("");
+
+  // calculator
+  const [expr, setExpr] = useState("");
+  const [memory, setMemory] = useState(0);
+  const [taxRate, setTaxRate] = useState(10);
+  const [calcHist, setCalcHist] = useState([]);
+  const [showCalcHist, setShowCalcHist] = useState(false);
+  const exprRef = useRef(null);
+
+  // percent rows + history
+  const [pctRows, setPctRows] = useState(() => {
+    const o = {}; PCT_CARDS.forEach((c) => (o[c.key] = [{ id: uid(), a: "", b: "" }])); return o;
+  });
+  const [pctHist, setPctHist] = useState(() => {
+    const o = {}; PCT_CARDS.forEach((c) => (o[c.key] = [])); return o;
+  });
+  const [openHist, setOpenHist] = useState({});
+
+  // point (bonus)
+  const [p1Rows, setP1Rows] = useState([{ id: uid(), amount: "", rate: "" }]);
+  const [p1Hist, setP1Hist] = useState([]);
+  const [p1Open, setP1Open] = useState(false);
+  const [p2Amount, setP2Amount] = useState("");
+  const [p2Rates, setP2Rates] = useState([{ id: uid(), val: "" }, { id: uid(), val: "" }]);
+  const [p2Hist, setP2Hist] = useState([]);
+  const [p2Open, setP2Open] = useState(false);
+
+  const flash = useCallback((m) => { setToast(m); setTimeout(() => setToast(""), 1400); }, []);
+
+  /* ---- persistence (best effort) ---- */
+  const loaded = useRef(false);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        {
+          const raw = localStorage.getItem("ml-state-v1");
+          if (alive && raw) {
+            const d = JSON.parse(raw);
+            if (d.calcHist) setCalcHist(d.calcHist);
+            if (d.pctHist) setPctHist((p) => ({ ...p, ...d.pctHist }));
+            if (d.p1Hist) setP1Hist(d.p1Hist);
+            if (d.p2Hist) setP2Hist(d.p2Hist);
+            if (typeof d.taxRate === "number") setTaxRate(d.taxRate);
+          }
+        }
+      } catch {}
+      loaded.current = true;
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!loaded.current) return;
+    const t = setTimeout(async () => {
+      try {
+        localStorage.setItem("ml-state-v1", JSON.stringify({ calcHist, pctHist, p1Hist, p2Hist, taxRate }));
+      } catch {}
+    }, 500);
+    return () => clearTimeout(t);
+  }, [calcHist, pctHist, p1Hist, p2Hist, taxRate]);
+
+  /* ---- calculator key handling ---- */
+  const liveResult = evaluate(expr);
+
+  const insertAtCursor = (txt) => {
+    const el = exprRef.current;
+    if (!el) { setExpr((e) => e + txt); return; }
+    const start = el.selectionStart ?? expr.length;
+    const end = el.selectionEnd ?? expr.length;
+    const next = expr.slice(0, start) + txt + expr.slice(end);
+    setExpr(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const p = start + txt.length;
+      try { el.setSelectionRange(p, p); } catch {}
+    });
+  };
+
+  const backspace = () => {
+    const el = exprRef.current;
+    if (!el) { setExpr((e) => e.slice(0, -1)); return; }
+    const start = el.selectionStart ?? expr.length;
+    const end = el.selectionEnd ?? expr.length;
+    if (start !== end) {
+      setExpr(expr.slice(0, start) + expr.slice(end));
+      requestAnimationFrame(() => { try { el.setSelectionRange(start, start); } catch {} });
+    } else if (start > 0) {
+      setExpr(expr.slice(0, start - 1) + expr.slice(start));
+      requestAnimationFrame(() => { try { el.setSelectionRange(start - 1, start - 1); } catch {} });
+    }
+  };
+
+  const doEquals = () => {
+    const r = evaluate(expr);
+    if (r === null || expr.trim() === "") return;
+    setCalcHist((h) => [{ id: uid(), expr: expr, res: fmt(r) }, ...h].slice(0, 50));
+    setExpr(fmt(r).replace(/,/g, ""));
+  };
+
+  const applyTax = (kind) => {
+    const r = evaluate(expr);
+    if (r === null) { flash("数式を入力してください"); return; }
+    const factor = 1 + taxRate / 100;
+    const out = kind === "in" ? r * factor : r / factor;
+    const label = kind === "in" ? `税込${taxRate}%` : `税抜${taxRate}%`;
+    setCalcHist((h) => [{ id: uid(), expr: `${fmt(r)} → ${label}`, res: fmt(out) }, ...h].slice(0, 50));
+    setExpr(fmt(out).replace(/,/g, ""));
+    flash(`${label}: ${fmt(out)}`);
+  };
+
+  const handleKey = (k) => {
+    switch (k.kind) {
+      case "num": case "op": case "paren": insertAtCursor(k.val); break;
+      case "clear": setExpr(""); break;
+      case "back": backspace(); break;
+      case "eq": doEquals(); break;
+      case "memc": setMemory(0); flash("メモリー消去"); break;
+      case "memr": if (memory !== 0 || true) insertAtCursor(String(memory)); break;
+      case "memp": { const r = evaluate(expr); if (r != null) { setMemory((m) => m + r); flash(`M+ ${fmt(memory + r)}`); } break; }
+      case "memm": { const r = evaluate(expr); if (r != null) { setMemory((m) => m - r); flash(`M− ${fmt(memory - r)}`); } break; }
+      case "taxin": applyTax("in"); break;
+      case "taxout": applyTax("out"); break;
+      default: break;
+    }
+  };
+
+  const KEYS = [
+    { l: "MC", kind: "memc", c: "fn" }, { l: "MR", kind: "memr", c: "fn" },
+    { l: "M−", kind: "memm", c: "fn" }, { l: "M+", kind: "memp", c: "fn" },
+    { l: "AC", kind: "clear", c: "clear" }, { l: "(", kind: "paren", val: "(", c: "op" },
+    { l: ")", kind: "paren", val: ")", c: "op" }, { l: "⌫", kind: "back", c: "back" },
+    { l: "7", kind: "num", val: "7" }, { l: "8", kind: "num", val: "8" },
+    { l: "9", kind: "num", val: "9" }, { l: "÷", kind: "op", val: "÷", c: "op" },
+    { l: "4", kind: "num", val: "4" }, { l: "5", kind: "num", val: "5" },
+    { l: "6", kind: "num", val: "6" }, { l: "×", kind: "op", val: "×", c: "op" },
+    { l: "1", kind: "num", val: "1" }, { l: "2", kind: "num", val: "2" },
+    { l: "3", kind: "num", val: "3" }, { l: "−", kind: "op", val: "−", c: "op" },
+    { l: "0", kind: "num", val: "0" }, { l: ".", kind: "num", val: "." },
+    { l: "%", kind: "op", val: "%", c: "op" }, { l: "+", kind: "op", val: "+", c: "op" },
+    { l: "税抜", kind: "taxout", c: "tax" }, { l: "税込", kind: "taxin", c: "tax" },
+    { l: "=", kind: "eq", c: "eq" },
+  ];
+
+  /* ---- percent ops ---- */
+  const setRowVal = (key, id, field, v) =>
+    setPctRows((rows) => ({ ...rows, [key]: rows[key].map((r) => (r.id === id ? { ...r, [field]: v } : r)) }));
+  const addRow = (key) =>
+    setPctRows((rows) => ({ ...rows, [key]: [...rows[key], { id: uid(), a: "", b: "" }] }));
+  const delRow = (key, id) =>
+    setPctRows((rows) => ({ ...rows, [key]: rows[key].filter((r) => r.id !== id) }));
+  const resetCard = (key) =>
+    setPctRows((rows) => ({ ...rows, [key]: [{ id: uid(), a: "", b: "" }] }));
+  const saveHist = (cfg, row) => {
+    const a = num(row.a), b = num(row.b), r = cfg.calc(a, b);
+    if (r == null) { flash("数字を入力してください"); return; }
+    setPctHist((h) => ({ ...h, [cfg.key]: [{ id: uid(), txt: cfg.text(a, b, r) }, ...h[cfg.key]].slice(0, 30) }));
+    flash("履歴に保存しました");
+  };
+  const delHist = (key, id) =>
+    setPctHist((h) => ({ ...h, [key]: h[key].filter((x) => x.id !== id) }));
+  const clearHist = (key) => setPctHist((h) => ({ ...h, [key]: [] }));
+
+  const resetAll = () => {
+    if (tab === "calc") { setExpr(""); setMemory(0); flash("計算機をリセット"); }
+    else if (tab === "percent") {
+      const o = {}; PCT_CARDS.forEach((c) => (o[c.key] = [{ id: uid(), a: "", b: "" }])); setPctRows(o);
+      flash("入力をすべてリセット");
+    } else {
+      setP1Rows([{ id: uid(), amount: "", rate: "" }]);
+      setP2Amount(""); setP2Rates([{ id: uid(), val: "" }, { id: uid(), val: "" }]);
+      flash("入力をすべてリセット");
+    }
+  };
+
+  const onFieldKey = (e) => { if (e.key === "Enter") { e.preventDefault(); moveNext(e.target); } };
+
+  /* ============================ render ============================ */
+  return (
+    <div className="app">
+      <style>{STYLE}</style>
+
+      <div className="topbar">
+        <div className="wrap" style={{ padding: 0 }}>
+          <div className="brand">
+            <div className="dot maru">¥</div>
+            <h1 className="maru">ポイ活・マネ活 計算ツール</h1>
+            <span style={{fontSize:9,background:"var(--mint)",color:"var(--accent2)",padding:"2px 6px",borderRadius:4,fontFamily:"'Roboto Mono',monospace",fontWeight:700,letterSpacing:".04em"}}>v1</span>
+          </div>
+          <div className="tabs">
+            <button className={`tab ${tab === "calc" ? "active" : ""}`} onClick={() => setTab("calc")}>
+              <CalcIcon /> 計算機
+            </button>
+            <button className={`tab ${tab === "percent" ? "active" : ""}`} onClick={() => setTab("percent")}>
+              <Percent /> ％計算
+            </button>
+            <button className={`tab ${tab === "point" ? "active" : ""}`} onClick={() => setTab("point")}>
+              <Coins /> ポイ活
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="wrap">
+        {tab === "calc" && (
+          <Calculator
+            expr={expr} setExpr={setExpr} exprRef={exprRef} liveResult={liveResult}
+            memory={memory} taxRate={taxRate} setTaxRate={setTaxRate} KEYS={KEYS}
+            handleKey={handleKey} calcHist={calcHist} setCalcHist={setCalcHist}
+            showCalcHist={showCalcHist} setShowCalcHist={setShowCalcHist} flash={flash}
+          />
+        )}
+
+        {tab === "percent" && (
+          <>
+            <div className="hint">
+              空欄に数字を入れると右側に答えが出ます。Enter / Tab で次の欄へ。
+            </div>
+            {PCT_CARDS.map((cfg) => (
+              <PercentCard
+                key={cfg.key} cfg={cfg} rows={pctRows[cfg.key]} setRowVal={setRowVal}
+                addRow={addRow} delRow={delRow} resetCard={resetCard} saveHist={saveHist}
+                hist={pctHist[cfg.key]} delHist={delHist} clearHist={clearHist}
+                open={!!openHist[cfg.key]} toggle={() => setOpenHist((o) => ({ ...o, [cfg.key]: !o[cfg.key] }))}
+                onFieldKey={onFieldKey} flash={flash}
+              />
+            ))}
+            <button className="bigreset" onClick={resetAll}>すべてリセット</button>
+          </>
+        )}
+
+        {tab === "point" && (
+          <PointTab
+            p1Rows={p1Rows} setP1Rows={setP1Rows} p1Hist={p1Hist} setP1Hist={setP1Hist}
+            p1Open={p1Open} setP1Open={setP1Open}
+            p2Amount={p2Amount} setP2Amount={setP2Amount} p2Rates={p2Rates} setP2Rates={setP2Rates}
+            p2Hist={p2Hist} setP2Hist={setP2Hist} p2Open={p2Open} setP2Open={setP2Open}
+            onFieldKey={onFieldKey} flash={flash} resetAll={resetAll}
+          />
+        )}
+      </div>
+
+      {toast && <div className="toast"><Check size={15} />{toast}</div>}
+    </div>
+  );
+}
+
+/* ============================ Calculator ============================ */
+function Calculator(props) {
+  const {
+    expr, setExpr, exprRef, liveResult, memory, taxRate, setTaxRate,
+    KEYS, handleKey, calcHist, setCalcHist, showCalcHist, setShowCalcHist, flash,
+  } = props;
+
+  const doCopy = async () => {
+    if (liveResult == null) return;
+    const ok = await copyText(fmt(liveResult));
+    flash(ok ? "コピーしました" : "選択してコピーしてください");
+  };
+
+  return (
+    <div className="card">
+      <div className="disp">
+        <div className="topline">
+          <div className={`mem ${memory !== 0 ? "" : "off"}`}>M&nbsp;{fmt(memory)}</div>
+          <div className="taxsel">
+            <span style={{ fontSize: 10.5, color: "#a9b6ae" }}>税率</span>
+            {[8, 10].map((r) => (
+              <button key={r} className={`taxbtn ${taxRate === r ? "on" : ""}`} onClick={() => setTaxRate(r)}>{r}%</button>
+            ))}
+          </div>
+        </div>
+        <input
+          ref={exprRef} className="exprInput mono" value={expr} placeholder="0"
+          inputMode="text" spellCheck={false}
+          onChange={(e) => setExpr(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleKey({ kind: "eq" }); } }}
+        />
+        <div className="resrow">
+          <div className="res mono">{expr.trim() === "" ? "" : (liveResult == null ? "…" : "= " + fmt(liveResult))}</div>
+          {liveResult != null && expr.trim() !== "" && (
+            <button className="miniCopy" onClick={doCopy} title="答えをコピー"><Copy size={15} /></button>
+          )}
+        </div>
+      </div>
+
+      <div className="pad">
+        {KEYS.map((k, idx) => (
+          <button key={idx} className={`key ${k.c || ""}`} onClick={() => handleKey(k)}>{k.l}</button>
+        ))}
+      </div>
+
+      <div className="cardFoot" style={{ marginTop: 12 }}>
+        <button className="iconbtn" onClick={() => setShowCalcHist((s) => !s)}>
+          <Clock /> 履歴 {calcHist.length > 0 ? `(${calcHist.length})` : ""}
+          {showCalcHist ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
+        {calcHist.length > 0 && (
+          <button className="iconbtn danger" onClick={() => setCalcHist([])}><Trash2 /> 全削除</button>
+        )}
+      </div>
+
+      {showCalcHist && (
+        <div className="histbox">
+          {calcHist.length === 0 && <div className="histempty">まだ履歴はありません</div>}
+          {calcHist.map((h) => (
+            <div className="histitem" key={h.id}>
+              <button
+                className="txt mono" style={{ textAlign: "left", background: "none", border: 0, cursor: "pointer", color: "var(--ink)" }}
+                onClick={() => { setExpr(h.res.replace(/,/g, "")); flash("読み込みました"); }}
+                title="タップで答えを呼び出す"
+              >
+                {h.expr} <span style={{ color: "var(--accent2)", fontWeight: 700 }}>= {h.res}</span>
+              </button>
+              <button className="delx" onClick={() => setCalcHist((c) => c.filter((x) => x.id !== h.id))}><X size={15} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button className="bigreset" onClick={() => { setExpr(""); flash("クリアしました"); }}>すべてクリア</button>
+    </div>
+  );
+}
+
+/* ============================ PercentCard ============================ */
+function PercentCard(props) {
+  const { cfg, rows, setRowVal, addRow, delRow, resetCard, saveHist, hist, delHist, clearHist, open, toggle, onFieldKey, flash } = props;
+
+  return (
+    <div className="card">
+      <div className="cardHead">
+        <div className="badge">
+          <div className="nbox">{cfg.n}</div>
+          <div className="ttl">{titleFor(cfg.n)}</div>
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button className="iconbtn" onClick={() => resetCard(cfg.key)}><RotateCcw /> リセット</button>
+        </div>
+      </div>
+
+      {rows.map((row) => {
+        const a = num(row.a), b = num(row.b);
+        const r = cfg.calc(a, b);
+        const hasAns = r != null;
+        return (
+          <div className="row" key={row.id}>
+            <div className="sentence">
+              {cfg.tokens.map((tk, i) => {
+                if (tk === "a")
+                  return <input key={i} className="field fieldnav" value={row.a} placeholder={cfg.pa}
+                    inputMode="decimal" onKeyDown={onFieldKey}
+                    onChange={(e) => setRowVal(cfg.key, row.id, "a", e.target.value)} />;
+                if (tk === "b")
+                  return <input key={i} className="field fieldnav" value={row.b} placeholder={cfg.pb}
+                    inputMode="decimal" onKeyDown={onFieldKey}
+                    onChange={(e) => setRowVal(cfg.key, row.id, "b", e.target.value)} />;
+                if (tk === "ans")
+                  return <span key={i} className={`ans ${hasAns ? "" : "empty"}`}>
+                    <span className="qt">『</span>{hasAns ? fmt(r) : "—"}<span className="qt">』</span>
+                  </span>;
+                if (tk === "%") return <span key={i}>%</span>;
+                return <span key={i}>{tk}</span>;
+              })}
+            </div>
+            <div className="formula">{hasAns ? cfg.formula(a, b, r) : "—"}</div>
+            <div className="rowfoot">
+              <button className="iconbtn" onClick={() => saveHist(cfg, row)}><Clock /> 保存</button>
+              <div className="spacer" />
+              {rows.length > 1 && (
+                <button className="delrow" onClick={() => delRow(cfg.key, row.id)} title="この行を削除"><X size={15} /></button>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      <div className="cardFoot">
+        <button className="iconbtn" onClick={() => addRow(cfg.key)}><Plus /> 行を追加（比較）</button>
+        <button className="iconbtn" onClick={toggle}>
+          <Clock /> 履歴 {hist.length ? `(${hist.length})` : ""} {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        </button>
+      </div>
+
+      {open && (
+        <div className="histbox">
+          {hist.length === 0 && <div className="histempty">保存した計算はありません</div>}
+          {hist.map((h) => (
+            <div className="histitem" key={h.id}>
+              <span className="txt">{h.txt}</span>
+              <button className="delx" onClick={() => delHist(cfg.key, h.id)}><X size={15} /></button>
+            </div>
+          ))}
+          {hist.length > 0 && (
+            <button className="iconbtn danger" style={{ marginTop: 6 }} onClick={() => clearHist(cfg.key)}>
+              <Trash2 /> 履歴を全削除
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function titleFor(n) {
+  return {
+    1: "○○ の ○○% は？",
+    2: "○○ は ○○ の 何％？",
+    3: "○○ が ○○% → 全体は？",
+    4: "増減率（前→後）",
+    5: "○○ の ○○%増し",
+    6: "○○ の ○○%引き",
+  }[n];
+}
+
+/* ============================ PointTab (bonus) ============================ */
+function PointTab(props) {
+  const {
+    p1Rows, setP1Rows, p1Hist, setP1Hist, p1Open, setP1Open,
+    p2Amount, setP2Amount, p2Rates, setP2Rates, p2Hist, setP2Hist, p2Open, setP2Open,
+    onFieldKey, flash, resetAll,
+  } = props;
+
+  // P1
+  const setP1 = (id, f, v) => setP1Rows((rs) => rs.map((r) => (r.id === id ? { ...r, [f]: v } : r)));
+  const addP1 = () => setP1Rows((rs) => [...rs, { id: uid(), amount: "", rate: "" }]);
+  const delP1 = (id) => setP1Rows((rs) => rs.filter((r) => r.id !== id));
+  const saveP1 = (row) => {
+    const amt = num(row.amount), rate = num(row.rate);
+    if (amt == null || rate == null) { flash("数字を入力してください"); return; }
+    const pt = amt * rate / 100;
+    setP1Hist((h) => [{ id: uid(), txt: `${fmt(amt)}円 ×${fmt(rate)}% → ${fmt(pt)}pt / 実質${fmt(amt - pt)}円` }, ...h].slice(0, 30));
+    flash("履歴に保存しました");
+  };
+
+  // P2
+  const setRate = (id, v) => setP2Rates((rs) => rs.map((r) => (r.id === id ? { ...r, val: v } : r)));
+  const addRate = () => setP2Rates((rs) => [...rs, { id: uid(), val: "" }]);
+  const delRate = (id) => setP2Rates((rs) => rs.filter((r) => r.id !== id));
+  const amt2 = num(p2Amount);
+  const totalRate = p2Rates.reduce((s, r) => s + (num(r.val) || 0), 0);
+  const totalPt = amt2 != null ? amt2 * totalRate / 100 : null;
+  const net2 = amt2 != null && totalPt != null ? amt2 - totalPt : null;
+  const saveP2 = () => {
+    if (amt2 == null) { flash("金額を入力してください"); return; }
+    setP2Hist((h) => [{ id: uid(), txt: `${fmt(amt2)}円 合計${fmt(totalRate)}% → ${fmt(totalPt)}pt / 実質${fmt(net2)}円` }, ...h].slice(0, 30));
+    flash("履歴に保存しました");
+  };
+
+  return (
+    <>
+      <div className="hint">
+        ポイント還元・実質価格をすばやく計算。Enter / Tab で次の欄へ。
+      </div>
+
+      {/* card 1: single reward */}
+      <div className="card">
+        <div className="cardHead">
+          <div className="badge"><div className="nbox">P1</div><div className="ttl">還元ポイント・実質価格</div></div>
+          <button className="iconbtn" onClick={() => setP1Rows([{ id: uid(), amount: "", rate: "" }])}><RotateCcw /> リセット</button>
+        </div>
+        {p1Rows.map((row) => {
+          const amt = num(row.amount), rate = num(row.rate);
+          const ok = amt != null && rate != null;
+          const pt = ok ? amt * rate / 100 : null;
+          const net = ok ? amt - pt : null;
+          return (
+            <div className="row" key={row.id}>
+              <div className="sentence">
+                <input className="field fieldnav" value={row.amount} placeholder="金額(円)" inputMode="decimal"
+                  onKeyDown={onFieldKey} onChange={(e) => setP1(row.id, "amount", e.target.value)} />
+                <span>円 ・ 還元</span>
+                <input className="field fieldnav" value={row.rate} placeholder="％" inputMode="decimal"
+                  onKeyDown={onFieldKey} onChange={(e) => setP1(row.id, "rate", e.target.value)} />
+                <span>%</span>
+              </div>
+              <div className="outgrid">
+                <div className="outbox"><div className="lab">獲得ポイント</div><div className="val">{ok ? fmt(pt) + " pt" : "—"}</div></div>
+                <div className="outbox alt"><div className="lab">実質価格</div><div className="val">{ok ? fmt(net) + " 円" : "—"}</div></div>
+              </div>
+              <div className="rowfoot">
+                <button className="iconbtn" onClick={() => saveP1(row)}><Clock /> 保存</button>
+                <div className="spacer" />
+                {p1Rows.length > 1 && <button className="delrow" onClick={() => delP1(row.id)}><X size={15} /></button>}
+              </div>
+            </div>
+          );
+        })}
+        <div className="cardFoot">
+          <button className="iconbtn" onClick={addP1}><Plus /> 行を追加（比較）</button>
+          <button className="iconbtn" onClick={() => setP1Open((o) => !o)}>
+            <Clock /> 履歴 {p1Hist.length ? `(${p1Hist.length})` : ""} {p1Open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+        </div>
+        {p1Open && (
+          <div className="histbox">
+            {p1Hist.length === 0 && <div className="histempty">保存した計算はありません</div>}
+            {p1Hist.map((h) => (
+              <div className="histitem" key={h.id}>
+                <span className="txt">{h.txt}</span>
+                <button className="delx" onClick={() => setP1Hist((x) => x.filter((y) => y.id !== h.id))}><X size={15} /></button>
+              </div>
+            ))}
+            {p1Hist.length > 0 && <button className="iconbtn danger" style={{ marginTop: 6 }} onClick={() => setP1Hist([])}><Trash2 /> 履歴を全削除</button>}
+          </div>
+        )}
+      </div>
+
+      {/* card 2: stacked rewards */}
+      <div className="card">
+        <div className="cardHead">
+          <div className="badge"><div className="nbox">P2</div><div className="ttl">多重還元の合算</div></div>
+          <button className="iconbtn" onClick={() => { setP2Amount(""); setP2Rates([{ id: uid(), val: "" }, { id: uid(), val: "" }]); }}><RotateCcw /> リセット</button>
+        </div>
+        <div className="row">
+          <div className="sentence">
+            <input className="field fieldnav" value={p2Amount} placeholder="金額(円)" inputMode="decimal"
+              onKeyDown={onFieldKey} onChange={(e) => setP2Amount(e.target.value)} />
+            <span>円</span>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+            {p2Rates.map((r, i) => (
+              <div className="ratechip" key={r.id}>
+                <span style={{ fontSize: 12, color: "var(--soft)" }}>還元{i + 1}</span>
+                <input className="field fieldnav" value={r.val} placeholder="％" inputMode="decimal"
+                  onKeyDown={onFieldKey} onChange={(e) => setRate(r.id, e.target.value)} />
+                <span style={{ fontSize: 13 }}>%</span>
+                {p2Rates.length > 1 && <button className="delrow" onClick={() => delRate(r.id)} style={{ width: 22, height: 22 }}><X size={13} /></button>}
+              </div>
+            ))}
+            <button className="iconbtn" onClick={addRate}><Plus /> 還元を追加</button>
+          </div>
+          <div className="outgrid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <div className="outbox"><div className="lab">合計還元率</div><div className="val">{fmt(totalRate)}%</div></div>
+            <div className="outbox"><div className="lab">合計ポイント</div><div className="val">{totalPt != null ? fmt(totalPt) : "—"}</div></div>
+            <div className="outbox alt"><div className="lab">実質価格</div><div className="val">{net2 != null ? fmt(net2) : "—"}</div></div>
+          </div>
+          <div className="rowfoot">
+            <button className="iconbtn" onClick={saveP2}><Clock /> 保存</button>
+          </div>
+        </div>
+        <div className="cardFoot">
+          <button className="iconbtn" onClick={() => setP2Open((o) => !o)}>
+            <Clock /> 履歴 {p2Hist.length ? `(${p2Hist.length})` : ""} {p2Open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          </button>
+        </div>
+        {p2Open && (
+          <div className="histbox">
+            {p2Hist.length === 0 && <div className="histempty">保存した計算はありません</div>}
+            {p2Hist.map((h) => (
+              <div className="histitem" key={h.id}>
+                <span className="txt">{h.txt}</span>
+                <button className="delx" onClick={() => setP2Hist((x) => x.filter((y) => y.id !== h.id))}><X size={15} /></button>
+              </div>
+            ))}
+            {p2Hist.length > 0 && <button className="iconbtn danger" style={{ marginTop: 6 }} onClick={() => setP2Hist([])}><Trash2 /> 履歴を全削除</button>}
+          </div>
+        )}
+      </div>
+
+      <button className="bigreset" onClick={resetAll}>すべてリセット</button>
+    </>
+  );
+}
+
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
