@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>ポイ活・マネ活 計算ツール v2</title>
+  <title>ポイ活・マネ活 計算ツール v3</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -26,6 +26,8 @@ const ChevronUp=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="
 const CalcIcon=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><rect width="16"height="20"x="4"y="2"rx="2"/><line x1="8"x2="16"y1="6"y2="6"/><line x1="16"x2="16"y1="14"y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>;
 const Percent=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><line x1="19"x2="5"y1="5"y2="19"/><circle cx="6.5"cy="6.5"r="2.5"/><circle cx="17.5"cy="17.5"r="2.5"/></svg>;
 const Coins=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><circle cx="8"cy="8"r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><line x1="16.71"x2="18.29"y1="12.59"y2="13.41"/></svg>;
+const Pencil=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>;
+const Gear=({size=16,...p})=><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size} viewBox="0 0 24 24" {...p}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12"cy="12"r="3"/></svg>;
 
 
 /* ============================ evaluator ============================ */
@@ -79,7 +81,7 @@ const uid = () => Math.random().toString(36).slice(2, 9);
 function moveNext(el) { const list = Array.from(document.querySelectorAll(".fieldnav")); const idx = list.indexOf(el); if (idx >= 0 && idx < list.length - 1) list[idx + 1].focus(); else el.blur(); }
 async function copyText(t) { try { await navigator.clipboard.writeText(t); return true; } catch { return false; } }
 
-/* ============================ styles (compact) ============================ */
+/* ============================ styles ============================ */
 const STYLE = `
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap');
 .app{
@@ -112,47 +114,56 @@ const STYLE = `
 
 /* ---------- calculator ---------- */
 .disp{ background:linear-gradient(170deg,#1d2a24,#16201b); border-radius:14px; padding:9px 11px 8px; color:#eef3ef; box-shadow:inset 0 2px 7px rgba(0,0,0,.35); }
-.disp .bar{ display:flex; justify-content:space-between; align-items:center; min-height:16px; margin-bottom:3px; }
-.disp .mem{ font-size:10.5px; font-weight:700; color:var(--gold); letter-spacing:.03em; }
-.disp .mem.off{ visibility:hidden; }
-.taxsel{ display:flex; gap:4px; align-items:center; }
-.taxsel .lab{ font-size:10px; color:#9fb0a7; }
-.taxbtn{ font-size:10px; padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.18); background:transparent; color:#cdd8d2; cursor:pointer; font-family:inherit; }
-.taxbtn.on{ background:var(--gold); color:#241a05; border-color:var(--gold); font-weight:700; }
-.feed{ max-height:30vh; overflow-y:auto; -webkit-overflow-scrolling:touch; margin:2px 0; }
+.feed{ max-height:32vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .feed::-webkit-scrollbar{ width:0; }
-.fline{ display:flex; align-items:center; gap:6px; padding:2px 0; }
-.fline .e{ flex:1; text-align:right; font-family:'Roboto Mono',monospace; font-size:13.5px; color:#aebdb4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.fline{ display:flex; align-items:center; gap:5px; padding:2px 0; }
+.fline .e{ flex:1; text-align:right; font-family:'Roboto Mono',monospace; font-size:13.5px; color:#aebdb4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; background:none; border:0; }
 .fline .e b{ color:#8ee6bd; font-weight:700; }
-.fline .dx{ background:none; border:0; color:#566a60; padding:1px; cursor:pointer; display:flex; }
+.fline .ic{ background:none; border:0; color:#6b7f74; padding:2px; cursor:pointer; display:flex; }
+.feditInput{ flex:1; min-width:0; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22); border-radius:6px; color:#fff;
+  font-family:'Roboto Mono',monospace; font-size:13.5px; padding:3px 6px; outline:none; text-align:right; }
+.fres{ font-family:'Roboto Mono',monospace; font-size:13.5px; color:#8ee6bd; font-weight:700; white-space:nowrap; }
 .feedempty{ text-align:center; font-size:11px; color:#566a60; padding:8px 0; }
-.current{ border-top:1px solid rgba(255,255,255,.1); padding-top:6px; margin-top:2px; }
-.exprInput{ width:100%; background:transparent; border:0; outline:none; color:#fff; text-align:right; font-family:'Roboto Mono',monospace; font-size:21px; font-weight:500; padding:1px 0; }
+.current{ border-top:1px solid rgba(255,255,255,.1); padding-top:6px; margin-top:4px; }
+.exprInput{ width:100%; background:transparent; border:0; outline:none; color:#fff; text-align:right; font-family:'Roboto Mono',monospace; font-size:22px; font-weight:500; padding:1px 0; }
 .exprInput::placeholder{ color:#5f6f67; }
 .resrow{ display:flex; justify-content:flex-end; align-items:center; gap:8px; min-height:24px; }
 .resrow .r{ font-family:'Roboto Mono',monospace; font-size:18px; font-weight:700; color:#8ee6bd; }
 .miniCopy{ background:rgba(255,255,255,.1); border:0; color:#cfe9dd; border-radius:7px; padding:4px; cursor:pointer; display:flex; }
 
 .pad{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:9px; }
-.key{ border:0; border-radius:12px; height:48px; font-family:'Roboto Mono',monospace; font-size:19px; font-weight:500; cursor:pointer;
+.key{ border:0; border-radius:12px; height:50px; font-family:'Roboto Mono',monospace; font-size:20px; font-weight:500; cursor:pointer;
   background:var(--paper2); color:var(--ink); box-shadow:0 2px 0 rgba(0,0,0,.07); transition:transform .05s, filter .1s; }
 .key:active{ transform:translateY(1px); filter:brightness(.96); }
-.key.mem{ height:34px; font-size:13px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif; background:#EDE7D8; color:var(--soft); }
 .key.op{ background:var(--mint); color:var(--accent2); font-weight:700; }
-.key.tax{ background:#F6ECD6; color:#9a6b12; font-size:13.5px; font-weight:700; font-family:'Zen Kaku Gothic New',sans-serif; }
 .key.pct{ background:#F6ECD6; color:#9a6b12; font-weight:700; }
-.key.eq{ background:linear-gradient(150deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; box-shadow:0 3px 0 rgba(11,115,80,.4); }
-.key.clear,.key.back{ background:#F3DED9; color:var(--coral); font-family:'Zen Kaku Gothic New',sans-serif; font-weight:700; font-size:16px; }
+.key.eq{ grid-column:span 4; height:46px; background:linear-gradient(150deg,var(--accent),var(--accent2)); color:#fff; font-weight:700; box-shadow:0 3px 0 rgba(11,115,80,.4); }
+.key.back{ background:#F3DED9; color:var(--coral); font-size:18px; }
 .key.paren{ background:#E7E1D2; color:var(--accent2); font-weight:700; }
-.key.neg{ font-size:15px; }
-.calcfoot{ display:flex; gap:6px; margin-top:8px; }
+.key.neg{ font-size:16px; }
+.calcfoot{ display:flex; gap:6px; margin-top:8px; align-items:center; }
+
+/* ---------- settings sheet ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(20,28,24,.45); display:flex; align-items:flex-end; justify-content:center; z-index:90; animation:fade .15s ease; }
+@keyframes fade{ from{opacity:0;} }
+.sheet{ background:var(--card); width:100%; max-width:460px; border-radius:20px 20px 0 0; padding:16px 16px 30px; box-shadow:0 -10px 34px rgba(0,0,0,.22); animation:up .2s ease; }
+@keyframes up{ from{transform:translateY(30px);opacity:.6;} }
+.sheet .sh{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.sheet h3{ margin:0; font-size:15px; font-weight:700; }
+.setrow{ margin-bottom:16px; }
+.setrow .lbl{ font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:7px; }
+.setrow .note{ font-size:11px; color:var(--soft); margin-top:7px; line-height:1.6; }
+.segs{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.seg{ padding:8px 14px; border-radius:10px; border:1.5px solid var(--line); background:var(--card); color:var(--soft); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; }
+.seg.on{ background:var(--mint); border-color:var(--accent); color:var(--accent2); }
+.taxcustom{ width:74px; background:var(--card); border:1.5px solid var(--line); border-radius:10px; padding:8px; font-family:'Roboto Mono',monospace; font-size:16px; text-align:right; outline:none; color:var(--ink); }
 
 /* ---------- shared ---------- */
 .iconbtn{ display:flex; align-items:center; justify-content:center; gap:4px; border:1px solid var(--line); background:var(--card);
-  border-radius:8px; padding:5px 8px; cursor:pointer; color:var(--soft); font-family:inherit; font-size:11px; font-weight:700; }
+  border-radius:8px; padding:6px 9px; cursor:pointer; color:var(--soft); font-family:inherit; font-size:11.5px; font-weight:700; }
 .iconbtn svg{ width:13px;height:13px; }
 .iconbtn:active{ background:var(--paper2); }
-.iconbtn.danger{ color:var(--coral); }
+.iconbtn.danger{ color:var(--coral); border-color:#F0D6CF; }
 .bigreset{ width:100%; margin-top:4px; border:1.5px dashed var(--coral); color:var(--coral); background:transparent; border-radius:12px; padding:11px; font-family:inherit; font-weight:700; font-size:12.5px; cursor:pointer; }
 .bigreset:active{ background:#FBEDE9; }
 
@@ -165,12 +176,11 @@ const STYLE = `
 .sentence{ display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:13.5px; line-height:1.7; }
 .nbox{ width:18px;height:18px;border-radius:6px;background:var(--mint);color:var(--accent2); display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;font-family:'Roboto Mono',monospace; }
 .field{ width:66px; max-width:26vw; background:var(--card); border:1.5px solid var(--line); border-radius:8px; padding:5px 7px;
-  font-family:'Roboto Mono',monospace; font-size:14px; text-align:right; outline:none; color:var(--ink); transition:border-color .15s, box-shadow .15s; }
+  font-family:'Roboto Mono',monospace; font-size:16px; text-align:right; outline:none; color:var(--ink); transition:border-color .15s, box-shadow .15s; }
 .field:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--mint); }
 .field::placeholder{ color:#bcb5a2; font-family:'Zen Kaku Gothic New',sans-serif; font-size:11px; }
-.ans{ display:inline-flex; align-items:baseline; background:var(--mint); border-radius:7px; padding:2px 8px; font-family:'Roboto Mono',monospace; font-weight:700; color:var(--accent2); font-size:15px; }
+.ans{ display:inline-flex; align-items:baseline; background:var(--mint); border-radius:7px; padding:2px 9px; font-family:'Roboto Mono',monospace; font-weight:700; color:var(--accent2); font-size:15px; }
 .ans.empty{ background:var(--paper2); color:#bcb5a2; }
-.qt{ color:var(--soft); font-weight:700; }
 .subline{ display:flex; align-items:center; gap:6px; margin-top:4px; }
 .formula{ flex:1; font-family:'Roboto Mono',monospace; font-size:10.5px; color:var(--soft); word-break:break-all; }
 .tools{ display:flex; gap:4px; align-items:center; }
@@ -191,7 +201,7 @@ const STYLE = `
 .ratechip{ display:inline-flex; align-items:center; gap:4px; }
 
 .toast{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:8px 16px; border-radius:999px;
-  font-size:12.5px; font-weight:700; z-index:80; display:flex;align-items:center;gap:6px; box-shadow:0 8px 22px rgba(0,0,0,.25); animation:pop .18s ease; }
+  font-size:12.5px; font-weight:700; z-index:120; display:flex;align-items:center;gap:6px; box-shadow:0 8px 22px rgba(0,0,0,.25); animation:pop .18s ease; }
 @keyframes pop{ from{opacity:0;} }
 .hint{ font-size:10.5px; color:var(--soft); text-align:center; margin:1px 0 8px; }
 `;
@@ -199,28 +209,30 @@ const STYLE = `
 /* ============================ percent config ============================ */
 const PCT = [
   { n: 1, key: "p1", pa: "金額", pb: "％", tokens: ["a", "の", "b", "% は", "ans"], calc: (a, b) => (a == null || b == null ? null : a * b / 100),
-    formula: (a, b, r) => `${fmt(a)} × ${fmt(b)}% = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}% は ${fmt(r)}` },
+    formula: (a, b, r) => `${fmt(a)} × ${fmt(b / 100)} = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}% は ${fmt(r)}` },
   { n: 2, key: "p2", pa: "部分", pb: "全体", tokens: ["a", "は", "b", "の", "ans", "%"], calc: (a, b) => (a == null || b == null || b === 0 ? null : a / b * 100),
-    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b)} × 100 = ${fmt(r)}%`, text: (a, b, r) => `${fmt(a)} は ${fmt(b)} の ${fmt(r)}%` },
+    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b)} × 100 = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} は ${fmt(b)} の ${fmt(r)}%` },
   { n: 3, key: "p3", pa: "部分", pb: "％", tokens: ["a", "が", "b", "% の場合、全体は", "ans"], calc: (a, b) => (a == null || b == null || b === 0 ? null : a / (b / 100)),
-    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b)}% = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} が ${fmt(b)}% → 全体 ${fmt(r)}` },
+    formula: (a, b, r) => `${fmt(a)} ÷ ${fmt(b / 100)} = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} が ${fmt(b)}% → 全体 ${fmt(r)}` },
   { n: 4, key: "p4", pa: "変更前", pb: "変更後", tokens: ["a", "から", "b", "への増減率は", "ans", "%"], calc: (a, b) => (a == null || b == null || a === 0 ? null : (b - a) / a * 100),
-    formula: (a, b, r) => `(${fmt(b)} − ${fmt(a)}) ÷ ${fmt(a)} × 100 = ${fmt(r)}%`, text: (a, b, r) => `${fmt(a)} → ${fmt(b)} の増減率 ${fmt(r)}%` },
+    formula: (a, b, r) => `(${fmt(b)} − ${fmt(a)}) ÷ ${fmt(a)} × 100 = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} → ${fmt(b)} の増減率 ${fmt(r)}%` },
   { n: 5, key: "p5", pa: "金額", pb: "％", tokens: ["a", "の", "b", "%増し は", "ans"], calc: (a, b) => (a == null || b == null ? null : a * (1 + b / 100)),
-    formula: (a, b, r) => `${fmt(a)} ×(1+${fmt(b)}%) = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%増し = ${fmt(r)}` },
+    formula: (a, b, r) => `${fmt(a)} × ${fmt(1 + b / 100)} = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%増し = ${fmt(r)}` },
   { n: 6, key: "p6", pa: "金額", pb: "％", tokens: ["a", "の", "b", "%引き は", "ans"], calc: (a, b) => (a == null || b == null ? null : a * (1 - b / 100)),
-    formula: (a, b, r) => `${fmt(a)} ×(1−${fmt(b)}%) = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%引き = ${fmt(r)}` },
+    formula: (a, b, r) => `${fmt(a)} × ${fmt(1 - b / 100)} = ${fmt(r)}`, text: (a, b, r) => `${fmt(a)} の ${fmt(b)}%引き = ${fmt(r)}` },
 ];
 
 /* ============================ App ============================ */
 function App() {
   const [tab, setTab] = useState("calc");
   const [toast, setToast] = useState("");
+  const [showSet, setShowSet] = useState(false);
 
   const [expr, setExpr] = useState("");
-  const [memory, setMemory] = useState(0);
   const [taxRate, setTaxRate] = useState(10);
   const [calcHist, setCalcHist] = useState([]);
+  const [editId, setEditId] = useState(null);
+  const [editDraft, setEditDraft] = useState("");
   const exprRef = useRef(null);
   const feedRef = useRef(null);
 
@@ -236,13 +248,22 @@ function App() {
 
   const flash = useCallback((m) => { setToast(m); setTimeout(() => setToast(""), 1300); }, []);
 
+  // prevent iOS focus-zoom
+  useEffect(() => {
+    try {
+      let m = document.querySelector('meta[name="viewport"]');
+      if (!m) { m = document.createElement("meta"); m.setAttribute("name", "viewport"); document.head.appendChild(m); }
+      m.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no");
+    } catch {}
+  }, []);
+
   const loaded = useRef(false);
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
         {
-          const raw = localStorage.getItem("ml-state-v2");
+          const raw = localStorage.getItem("ml-state-v3");
           if (alive && raw) {
             const d = JSON.parse(raw);
             if (d.calcHist) setCalcHist(d.calcHist);
@@ -260,18 +281,18 @@ function App() {
   useEffect(() => {
     if (!loaded.current) return;
     const t = setTimeout(async () => {
-      try { localStorage.setItem("ml-state-v2", JSON.stringify({ calcHist, pctHist, p1Hist, p2Hist, taxRate })); } catch {}
+      try { localStorage.setItem("ml-state-v3", JSON.stringify({ calcHist, pctHist, p1Hist, p2Hist, taxRate })); } catch {}
     }, 500);
     return () => clearTimeout(t);
   }, [calcHist, pctHist, p1Hist, p2Hist, taxRate]);
 
-  useEffect(() => { if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight; }, [calcHist, tab]);
+  useEffect(() => { if (feedRef.current && !editId) feedRef.current.scrollTop = feedRef.current.scrollHeight; }, [calcHist, tab, editId]);
 
   const liveResult = evaluate(expr);
   const insertAtCursor = (txt) => {
     const el = exprRef.current; if (!el) { setExpr((e) => e + txt); return; }
     const s = el.selectionStart ?? expr.length, e = el.selectionEnd ?? expr.length;
-    const next = expr.slice(0, s) + txt + expr.slice(e); setExpr(next);
+    setExpr(expr.slice(0, s) + txt + expr.slice(e));
     requestAnimationFrame(() => { el.focus(); const p = s + txt.length; try { el.setSelectionRange(p, p); } catch {} });
   };
   const backspace = () => {
@@ -282,43 +303,38 @@ function App() {
   };
   const doEquals = () => {
     const r = evaluate(expr); if (r === null || expr.trim() === "") return;
-    setCalcHist((h) => [{ id: uid(), expr, res: fmt(r) }, ...h].slice(0, 60));
+    setCalcHist((h) => [{ id: uid(), expr, res: fmt(r) }, ...h].slice(0, 80));
     setExpr(fmt(r).replace(/,/g, ""));
-  };
-  const applyTax = (kind) => {
-    const r = evaluate(expr); if (r === null) { flash("数式を入力してください"); return; }
-    const f = 1 + taxRate / 100; const out = kind === "in" ? r * f : r / f;
-    const label = kind === "in" ? `税込${taxRate}%` : `税抜${taxRate}%`;
-    setCalcHist((h) => [{ id: uid(), expr: `${fmt(r)}→${label}`, res: fmt(out) }, ...h].slice(0, 60));
-    setExpr(fmt(out).replace(/,/g, "")); flash(`${label}: ${fmt(out)}`);
   };
   const negate = () => { const r = evaluate(expr); if (r != null) setExpr(fmt(-r).replace(/,/g, "")); };
   const handleKey = (k) => {
     switch (k.kind) {
       case "num": case "op": case "paren": insertAtCursor(k.val); break;
-      case "clear": setExpr(""); break;
       case "back": backspace(); break;
       case "eq": doEquals(); break;
       case "neg": negate(); break;
-      case "memc": setMemory(0); flash("メモリー消去"); break;
-      case "memr": insertAtCursor(String(memory)); break;
-      case "memp": { const r = evaluate(expr); if (r != null) { setMemory((m) => m + r); flash(`M+ ${fmt(memory + r)}`); } break; }
-      case "memm": { const r = evaluate(expr); if (r != null) { setMemory((m) => m - r); flash(`M− ${fmt(memory - r)}`); } break; }
-      case "taxin": applyTax("in"); break;
-      case "taxout": applyTax("out"); break;
       default: break;
     }
   };
   const KEYS = [
-    { l: "MC", kind: "memc", c: "mem" }, { l: "MR", kind: "memr", c: "mem" }, { l: "M−", kind: "memm", c: "mem" }, { l: "M+", kind: "memp", c: "mem" },
-    { l: "AC", kind: "clear", c: "clear" }, { l: "(", kind: "paren", val: "(", c: "paren" }, { l: ")", kind: "paren", val: ")", c: "paren" }, { l: "⌫", kind: "back", c: "back" },
-    { l: "%", kind: "op", val: "%", c: "pct" }, { l: "税抜", kind: "taxout", c: "tax" }, { l: "税込", kind: "taxin", c: "tax" }, { l: "÷", kind: "op", val: "÷", c: "op" },
-    { l: "7", kind: "num", val: "7" }, { l: "8", kind: "num", val: "8" }, { l: "9", kind: "num", val: "9" }, { l: "×", kind: "op", val: "×", c: "op" },
-    { l: "4", kind: "num", val: "4" }, { l: "5", kind: "num", val: "5" }, { l: "6", kind: "num", val: "6" }, { l: "−", kind: "op", val: "−", c: "op" },
-    { l: "1", kind: "num", val: "1" }, { l: "2", kind: "num", val: "2" }, { l: "3", kind: "num", val: "3" }, { l: "+", kind: "op", val: "+", c: "op" },
-    { l: "0", kind: "num", val: "0" }, { l: ".", kind: "num", val: "." }, { l: "±", kind: "neg", c: "neg" }, { l: "=", kind: "eq", c: "eq" },
+    { l: "(", kind: "paren", val: "(", c: "paren" }, { l: ")", kind: "paren", val: ")", c: "paren" }, { l: "%", kind: "op", val: "%", c: "pct" }, { l: "⌫", kind: "back", c: "back" },
+    { l: "7", kind: "num", val: "7" }, { l: "8", kind: "num", val: "8" }, { l: "9", kind: "num", val: "9" }, { l: "÷", kind: "op", val: "÷", c: "op" },
+    { l: "4", kind: "num", val: "4" }, { l: "5", kind: "num", val: "5" }, { l: "6", kind: "num", val: "6" }, { l: "×", kind: "op", val: "×", c: "op" },
+    { l: "1", kind: "num", val: "1" }, { l: "2", kind: "num", val: "2" }, { l: "3", kind: "num", val: "3" }, { l: "−", kind: "op", val: "−", c: "op" },
+    { l: "0", kind: "num", val: "0" }, { l: ".", kind: "num", val: "." }, { l: "±", kind: "neg", c: "neg" }, { l: "+", kind: "op", val: "+", c: "op" },
+    { l: "=", kind: "eq", c: "eq" },
   ];
 
+  // history editing
+  const startEdit = (h) => { setEditId(h.id); setEditDraft(h.expr); };
+  const commitEdit = () => {
+    if (editId == null) return;
+    const r = evaluate(editDraft);
+    setCalcHist((hist) => hist.map((h) => (h.id === editId ? { ...h, expr: editDraft, res: r == null ? "—" : fmt(r) } : h)));
+    setEditId(null); setEditDraft("");
+  };
+
+  // percent ops
   const setRowVal = (key, id, f, v) => setPctRows((rows) => ({ ...rows, [key]: rows[key].map((r) => (r.id === id ? { ...r, [f]: v } : r)) }));
   const addRow = (key) => setPctRows((rows) => ({ ...rows, [key]: [...rows[key], { id: uid(), a: "", b: "" }] }));
   const delRow = (key, id) => setPctRows((rows) => ({ ...rows, [key]: rows[key].filter((r) => r.id !== id) }));
@@ -331,7 +347,7 @@ function App() {
   const clearHist = (key) => setPctHist((h) => ({ ...h, [key]: [] }));
 
   const resetAll = () => {
-    if (tab === "calc") { setExpr(""); setMemory(0); flash("クリアしました"); }
+    if (tab === "calc") { setExpr(""); flash("クリアしました"); }
     else if (tab === "percent") { const o = {}; PCT.forEach((c) => (o[c.key] = [{ id: uid(), a: "", b: "" }])); setPctRows(o); flash("入力をリセット"); }
     else { setP1Rows([{ id: uid(), amount: "", rate: "" }]); setP2Amount(""); setP2Rates([{ id: uid(), val: "" }, { id: uid(), val: "" }]); flash("入力をリセット"); }
   };
@@ -342,7 +358,7 @@ function App() {
       <style>{STYLE}</style>
       <div className="topbar">
         <div className="wrap" style={{ padding: 0 }}>
-          <div className="brand"><div className="dot maru">¥</div><h1 className="maru">ポイ活・マネ活 計算ツール</h1><span style={{fontSize:9,background:"var(--mint)",color:"var(--accent2)",padding:"2px 6px",borderRadius:4,fontFamily:"'Roboto Mono',monospace",fontWeight:700,letterSpacing:".04em"}}>v2</span></div>
+          <div className="brand"><div className="dot maru">¥</div><h1 className="maru">ポイ活・マネ活 計算ツール</h1><span style={{fontSize:9,background:"var(--mint)",color:"var(--accent2)",padding:"2px 6px",borderRadius:4,fontFamily:"'Roboto Mono',monospace",fontWeight:700,letterSpacing:".04em"}}>v3</span></div>
           <div className="tabs">
             <button className={`tab ${tab === "calc" ? "active" : ""}`} onClick={() => setTab("calc")}><CalcIcon /> 計算機</button>
             <button className={`tab ${tab === "percent" ? "active" : ""}`} onClick={() => setTab("percent")}><Percent /> ％計算</button>
@@ -355,20 +371,29 @@ function App() {
         {tab === "calc" && (
           <div className="card">
             <div className="disp">
-              <div className="bar">
-                <div className={`mem ${memory !== 0 ? "" : "off"}`}>M {fmt(memory)}</div>
-                <div className="taxsel"><span className="lab">税率</span>
-                  {[8, 10].map((r) => <button key={r} className={`taxbtn ${taxRate === r ? "on" : ""}`} onClick={() => setTaxRate(r)}>{r}%</button>)}
-                </div>
-              </div>
               <div className="feed" ref={feedRef}>
-                {calcHist.length === 0 && <div className="feedempty">計算するとここに履歴が積み重なります</div>}
-                {[...calcHist].reverse().map((h) => (
-                  <div className="fline" key={h.id}>
-                    <span className="e" onClick={() => { setExpr(h.res.replace(/,/g, "")); flash("読み込みました"); }}>{h.expr} = <b>{h.res}</b></span>
-                    <button className="dx" onClick={() => setCalcHist((c) => c.filter((x) => x.id !== h.id))}><X size={13} /></button>
-                  </div>
-                ))}
+                {calcHist.length === 0 && <div className="feedempty">計算するとここに履歴が積み重なります（鉛筆で修正可）</div>}
+                {[...calcHist].reverse().map((h) => {
+                  if (editId === h.id) {
+                    const lr = evaluate(editDraft);
+                    return (
+                      <div className="fline" key={h.id}>
+                        <input className="feditInput" value={editDraft} autoFocus inputMode="text" spellCheck={false}
+                          onChange={(e) => setEditDraft(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") commitEdit(); }} onBlur={commitEdit} />
+                        <span className="fres">= {lr == null ? "—" : fmt(lr)}</span>
+                        <button className="ic" onClick={commitEdit}><Check size={14} /></button>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="fline" key={h.id}>
+                      <button className="e" onClick={() => { setExpr(h.res.replace(/,/g, "")); flash("読み込みました"); }}>{h.expr} = <b>{h.res}</b></button>
+                      <button className="ic" onClick={() => startEdit(h)} title="修正"><Pencil size={13} /></button>
+                      <button className="ic" onClick={() => setCalcHist((c) => c.filter((x) => x.id !== h.id))} title="削除"><X size={14} /></button>
+                    </div>
+                  );
+                })}
               </div>
               <div className="current">
                 <input ref={exprRef} className="exprInput" value={expr} placeholder="0" inputMode="text" spellCheck={false}
@@ -383,7 +408,7 @@ function App() {
             </div>
             <div className="pad">{KEYS.map((k, i) => <button key={i} className={`key ${k.c || ""}`} onClick={() => handleKey(k)}>{k.l}</button>)}</div>
             <div className="calcfoot">
-              {calcHist.length > 0 && <button className="iconbtn danger" onClick={() => setCalcHist([])}><Trash2 /> 履歴を全削除</button>}
+              <button className="iconbtn" onClick={() => setShowSet(true)}><Gear /> 設定</button>
               <button className="iconbtn" onClick={() => { setExpr(""); flash("クリア"); }} style={{ marginLeft: "auto" }}><RotateCcw /> クリア</button>
             </div>
           </div>
@@ -410,12 +435,36 @@ function App() {
             p2Open={p2Open} setP2Open={setP2Open} onFieldKey={onFieldKey} flash={flash} resetAll={resetAll} />
         )}
       </div>
+
+      {showSet && (
+        <div className="overlay" onClick={() => setShowSet(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sh"><h3 className="maru">設定</h3><button className="tbtn" onClick={() => setShowSet(false)}><X size={15} /></button></div>
+            <div className="setrow">
+              <div className="lbl">消費税率</div>
+              <div className="segs">
+                <button className={`seg ${taxRate === 8 ? "on" : ""}`} onClick={() => setTaxRate(8)}>8%</button>
+                <button className={`seg ${taxRate === 10 ? "on" : ""}`} onClick={() => setTaxRate(10)}>10%</button>
+                <input className="taxcustom" value={taxRate} inputMode="decimal"
+                  onChange={(e) => { const v = parseFloat(e.target.value); setTaxRate(Number.isFinite(v) ? v : 0); }} />
+                <span style={{ fontSize: 14, color: "var(--soft)" }}>%</span>
+              </div>
+              <div className="note">税込にするには計算機で「金額 + {fmt(taxRate)}%」、税抜（税込価格→本体）は「税込価格 ÷ (1 + {fmt(taxRate)}%)」と入力できます。例: 1,000 + {fmt(taxRate)}% = {fmt(1000 * (1 + taxRate / 100))}</div>
+            </div>
+            <div className="setrow" style={{ marginBottom: 0 }}>
+              <div className="lbl">計算履歴</div>
+              <button className="iconbtn danger" onClick={() => { setCalcHist([]); flash("履歴を全削除"); }}><Trash2 /> 計算機の履歴を全削除</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {toast && <div className="toast"><Check size={14} />{toast}</div>}
     </div>
   );
 }
 
-/* ============================ PctBlock (dense) ============================ */
+/* ============================ PctBlock ============================ */
 function PctBlock({ cfg, rows, setRowVal, addRow, delRow, resetCard, saveHist, hist, delHist, clearHist, open, toggle, onFieldKey }) {
   return (
     <div className="pblock">
@@ -428,7 +477,7 @@ function PctBlock({ cfg, rows, setRowVal, addRow, delRow, resetCard, saveHist, h
               {cfg.tokens.map((tk, i) => {
                 if (tk === "a") return <input key={i} className="field fieldnav" value={row.a} placeholder={cfg.pa} inputMode="decimal" onKeyDown={onFieldKey} onChange={(e) => setRowVal(cfg.key, row.id, "a", e.target.value)} />;
                 if (tk === "b") return <input key={i} className="field fieldnav" value={row.b} placeholder={cfg.pb} inputMode="decimal" onKeyDown={onFieldKey} onChange={(e) => setRowVal(cfg.key, row.id, "b", e.target.value)} />;
-                if (tk === "ans") return <span key={i} className={`ans ${ok ? "" : "empty"}`}><span className="qt">『</span>{ok ? fmt(r) : "—"}<span className="qt">』</span></span>;
+                if (tk === "ans") return <span key={i} className={`ans ${ok ? "" : "empty"}`}>{ok ? fmt(r) : "—"}</span>;
                 if (tk === "%") return <span key={i}>%</span>;
                 return <span key={i}>{tk}</span>;
               })}
